@@ -504,8 +504,9 @@
     followBtn.addEventListener('click', function() {
       if (this.disabled) return;
       localStorage.setItem(STORAGE_KEY, 'true');
-      // 跳转到推特
-      window.location.href = TWITTER_URL;
+      updateFollowUI(true);
+      // 在新标签页打开推特，保留当前页面
+      window.open(TWITTER_URL, '_blank', 'noopener,noreferrer');
     });
   });
 </script>
