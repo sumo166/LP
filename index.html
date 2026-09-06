@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>V3 宽区间评估表（实时更新版）</title>
+  <style>
+    :root { color-scheme: light; }
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #f5f7fb;
+      margin: 0;
+      padding: 20px;
+      color: #1f2937;
+    }
+    .container { max-width: 1100px; margin: 0 auto; }
+    h1 { font-size: 22px; margin: 0; }
+    .card {
+      background: #ffffff;
+      border-radius: 16px;
+      padding: 18px 20px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+      margin-bottom: 18px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    fieldset {
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    legend { font-weight: 600; padding: 0 6px; color: #374151; }
+    label {
+      display: flex;
+      flex-direction: column;
+      font-size: 13px;
+      color: #4b5563;
+      margin-bottom: 10px;
+    }
+    input {
+      margin-top: 4px;
+      padding: 8px 10px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      font-size: 14px;
+      width: 100%;
+      box-sizing: border-box;
+      background: #fafafa;
+    }
+    input:focus { outline: none; border-color: #6366f1; background: #fff; }
+    input[readonly] {
+      background: #f3f4f6;
+      color: #374151;
+      cursor: not-allowed;
+    }
+    button {
+      margin-top: 16px;
+      padding: 10px 18px;
+      font-size: 15px;
+      border: none;
+      border-radius: 10px;
+      background: #4f46e5;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:hover { background: #4338ca; }
+    .summary {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin: 14px 0 16px;
+    }
+    .summary-item {
+      flex: 1 1 150px;
+      background: #f9fafb;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .summary-item .label { font-size: 12px; color: #6b7280; }
+    .summary-item .value { font-size: 20px; font-weight: 700; margin-top: 4px; }
+    .pos { color: #16a34a; }
+    .neg { color: #dc2626; }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      white-space: nowrap;
+    }
+    th, td {
+      padding: 8px 10px;
+      border-bottom: 1px solid #e5e7eb;
+      text-align: right;
+    }
+    th {
+      background: #f3f4f6;
+      color: #374151;
+      font-weight: 600;
+      position: sticky;
+      top: 0;
+    }
+    th:first-child, td:first-child { text-align: left; }
+    tbody tr:hover { background: #f9fafb; }
+    .notes {
+      font-size: 12px;
+      color: #6b7280;
+      line-height: 1.6;
+    }
+    .error {
+      color: #dc2626;
+      font-weight: 600;
+      margin-top: 10px;
+    }
+
+    /* ---- 关注区域 ---- */
+    .header-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .follow-area {
+      display: flex;
+      align-items: center;
+      gap: 8px 12px;
+      background: #f0f4fa;
+      padding: 6px 16px 6px 18px;
+      border-radius: 40px;
+      border: 1px solid #d9e2ef;
+      flex-wrap: wrap;
+    }
+    .follow-btn {
+      background: #3b82f6;
+      color: white;
+      border: none;
+      padding: 6px 18px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background 0.15s;
+      white-space: nowrap;
+      margin: 0;
+    }
+    .follow-btn:hover {
+      background: #2563eb;
+    }
+    .follow-btn.followed {
+      background: #0b7e4b;
+      cursor: default;
+      opacity: 0.8;
+    }
+    .follow-status {
+      font-size: 14px;
+      font-weight: 500;
+      color: #1f2a3f;
+    }
+    .follow-hint {
+      font-size: 12px;
+      color: #6b7a8f;
+      font-weight: 400;
+    }
+
+    /* ---- 联系方式 ---- */
+    .contact-area {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 20px 32px;
+      padding: 4px 0;
+    }
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 15px;
+      color: #1f2937;
+    }
+    .contact-item a {
+      color: #4f46e5;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .contact-item a:hover {
+      text-decoration: underline;
+    }
+    .contact-item .icon {
+      font-size: 20px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <!-- 标题 + 关注 -->
+  <div class="header-row">
+    <h1>🧊 新 V3 宽区间评估表</h1>
+    <div class="follow-area">
+      <span class="follow-status" id="followStatus">🔔 关注我们</span>
+      <button class="follow-btn" id="followBtn">关注</button>
+      <span class="follow-hint">点击后跳转关注</span>
+    </div>
+  </div>
+
+  <!-- 主卡片 -->
+  <div class="card">
+    <div class="grid">
+      <fieldset>
+        <legend>费用与区间</legend>
+        <label>费率 %
+          <input id="feeRate" type="number" step="0.01" value="0.30" />
+        </label>
+        <label>下限 (USDG/PONS)
+          <input id="lowerPrice" type="number" step="any" value="0.40" />
+        </label>
+        <label>上限 (USDG/PONS)
+          <input id="upperPrice" type="number" step="any" value="0.80" />
+        </label>
+        <label>表格价格扩展 (±)
+          <input id="priceSpread" type="number" step="0.01" value="0.10" />
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>代币信息</legend>
+        <label>代币A名称
+          <input id="nameA" type="text" value="USDG" />
+        </label>
+        <label>代币A数量
+          <input id="qtyA" type="number" step="any" value="1000" />
+        </label>
+        <label>代币A价格
+          <input id="priceA" type="number" step="any" value="1.00" />
+        </label>
+        <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 10px 0;" />
+        <label>代币B名称
+          <input id="nameB" type="text" value="PONS" />
+        </label>
+        <label>代币B数量
+          <input id="qtyB" type="number" step="any" value="2000" />
+        </label>
+        <label>代币B价格（投入LP时）
+          <input id="priceB" type="number" step="any" value="0.50" />
+        </label>
+        <label>当前 PONS 价格
+          <input id="currentPrice" type="number" step="any" value="0.50" />
+        </label>
+      </fieldset>
+
+      <fieldset>
+        <legend>收益设置</legend>
+        <label>APR %
+          <input id="apr" type="number" step="0.01" value="20.00" />
+        </label>
+        <label>1h 收益 ($/h)（自动计算）
+          <input id="income1h" type="number" step="any" readonly value="0" />
+        </label>
+      </fieldset>
+    </div>
+
+    <button type="button" onclick="updateEvaluation()">更新评估</button>
+    <div id="errorMsg" class="error"></div>
+  </div>
+
+  <!-- 统计与表格 -->
+  <div class="card">
+    <h2 style="margin-top:0;">当前统计摘要</h2>
+    <div id="summary" class="summary"></div>
+    <div style="overflow-x:auto;">
+      <table id="resultTable"></table>
+    </div>
+  </div>
+
+  <!-- 底部说明 -->
+  <div class="card notes">
+    <b>底部说明 / 计算假设</b><br>
+    1. 代币A 为报价币，代币B 为基准币，价格口径为 USDG/PONS。<br>
+    2. 代币B价格（投入LP时）用于计算初始投入市值；当前 PONS 价格用于计算当前持仓和收益。<br>
+    3. 流动性 L 由初始总价值（A数量 × A价格 + B数量 × 投入价）联合求解，确保在投入价格处 LP 市值 = HODL 市值 = 初始总价值。<br>
+    4. HODL 市值 = 初始A数量 × A价格 + 初始B数量 × 当前 PONS 价格。<br>
+    5. LP 市值 = 按 V3 宽区间和当前价格计算的实际持仓市值（基于上述流动性 L）。<br>
+    6. 无常缺口 = HODL 市值 - LP 市值。<br>
+    7. LP 绝对浮亏 = 初始投入市值 - 当前 LP 市值。<br>
+    8. 回本手续费 = max(0, LP 绝对浮亏)。<br>
+    9. 回本时间 = 回本手续费 ÷ 1h收益；1h收益 = 当前LP市值 × APR / 8760。<br>
+    10. 表格价格范围 = [下限 - 表格价格扩展, 上限 + 表格价格扩展]，均匀生成价格点。<br>
+    11. 所有金额显示为完整美元数值（保留两位小数），不使用 K/M 缩写。<br>
+    12. 输入任何参数后，表格和摘要将实时自动刷新，无需点击按钮。
+  </div>
+
+  <!-- 联系方式区 -->
+  <div class="card" style="padding: 12px 20px;">
+    <div class="contact-area">
+      <div class="contact-item">
+        <span class="icon">📢</span>
+        <a href="https://t.me/web6kol" target="_blank">Telegram 频道</a>
+      </div>
+      <div class="contact-item">
+        <span class="icon">🐦</span>
+        <a href="https://x.com/web5_kol" target="_blank">Twitter / X</a>
+      </div>
+      <div class="contact-item">
+        <span class="icon">🪙</span>
+        <span>币安搜：<strong>web5kol</strong></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ========== 原始评估脚本 ==========
+  function $(id) { return document.getElementById(id); }
+  function num(id) {
+    const v = parseFloat($(id).value);
+    if (Number.isNaN(v)) throw new Error('请输入有效数字：' + id);
+    return v;
+  }
+
+  function fmtPrice(p) {
+    if (p >= 1000) return p.toFixed(2);
+    if (p >= 1) return p.toFixed(4);
+    if (p >= 0.01) return p.toFixed(6);
+    return p.toPrecision(4);
+  }
+
+  function fmtMoney(v) {
+    return v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function fmtHours(h) {
+    if (!Number.isFinite(h)) return '∞';
+    if (h >= 8760) return (h / 8760).toFixed(2) + ' 年';
+    if (h >= 720) return (h / 720).toFixed(2) + ' 月';
+    if (h >= 168) return (h / 168).toFixed(2) + ' 周';
+    if (h >= 24) return (h / 24).toFixed(2) + ' 天';
+    return h.toFixed(1) + ' h';
+  }
+
+  function generatePrices(Pa, Pb, currentP, priceB, spread) {
+    const keyPrices = [Pa, Pb, currentP, priceB];
+    if (!(spread > 0)) {
+      return Array.from(new Set(keyPrices.map(p => +p.toFixed(10)))).sort((a, b) => a - b);
+    }
+    const minP = Math.max(0.000001, Pa - spread);
+    const maxP = Pb + spread;
+    const steps = 30;
+    const step = (maxP - minP) / steps;
+    const prices = [];
+    for (let i = 0; i <= steps; i++) {
+      prices.push(minP + i * step);
+    }
+    keyPrices.forEach(p => prices.push(p));
+    prices.sort((a, b) => a - b);
+    return Array.from(new Set(prices.map(p => +p.toFixed(10)))).sort((a, b) => a - b);
+  }
+
+  function updateEvaluation() {
+    const errorBox = $('errorMsg');
+    errorBox.textContent = '';
+    try {
+      const Pa = num('lowerPrice');
+      const Pb = num('upperPrice');
+      const qtyA = num('qtyA');
+      const priceA = num('priceA');
+      const qtyB = num('qtyB');
+      const priceB = num('priceB');
+      const currentP = num('currentPrice');
+      const apr = num('apr') / 100;
+      const spread = num('priceSpread');
+
+      if (Pa <= 0 || Pb <= Pa) throw new Error('区间设置错误：需满足 0 < 下限 < 上限');
+      if (qtyA < 0 || qtyB < 0 || priceA <= 0 || priceB <= 0 || currentP <= 0) {
+        throw new Error('代币数量和价格必须大于等于 0，价格必须大于 0');
+      }
+      if (qtyA === 0 && qtyB === 0) throw new Error('代币A和代币B数量不能同时为 0');
+      if (priceB < Pa || priceB > Pb) throw new Error('投入时价格必须位于 [下限, 上限] 区间内');
+      if (spread < 0) throw new Error('表格价格扩展不能为负数');
+
+      const sqrtPa = Math.sqrt(Pa);
+      const sqrtPb = Math.sqrt(Pb);
+      const sqrtP0 = Math.sqrt(priceB);
+
+      const numerator = qtyA * priceA + qtyB * priceB;
+      const denominator = (sqrtP0 - sqrtPa) * priceA + (1 / sqrtP0 - 1 / sqrtPb) * priceB;
+      if (denominator <= 0) throw new Error('无法计算流动性，请检查价格区间和价格设置');
+      const L = numerator / denominator;
+
+      function currentAmounts(P) {
+        if (P <= Pa) {
+          return { A: 0, B: L * (1 / sqrtPa - 1 / sqrtPb) };
+        } else if (P >= Pb) {
+          return { A: L * (sqrtPb - sqrtPa), B: 0 };
+        } else {
+          const sqrtP = Math.sqrt(P);
+          return {
+            A: L * (sqrtP - sqrtPa),
+            B: L * (1 / sqrtP - 1 / sqrtPb)
+          };
+        }
+      }
+
+      const initialValue = numerator;
+
+      function calcRow(P) {
+        const hodlValue = qtyA * priceA + qtyB * P;
+        const amounts = currentAmounts(P);
+        const lpValue = amounts.A * priceA + amounts.B * P;
+        const impLoss = hodlValue - lpValue;
+        const absLoss = initialValue - lpValue;
+        const backFee = Math.max(0, absLoss);
+        const hourlyIncome = lpValue * apr / 8760;
+        const backHours = hourlyIncome > 0 ? backFee / hourlyIncome : Infinity;
+        return { P, hodlValue, lpValue, impLoss, absLoss, backFee, backHours, hourlyIncome };
+      }
+
+      const currentRow = calcRow(currentP);
+      $('income1h').value = currentRow.hourlyIncome.toFixed(6);
+
+      const summary = $('summary');
+      summary.innerHTML = `
+        <div class="summary-item"><div class="label">当前 PONS 价格</div><div class="value">${fmtPrice(currentP)}</div></div>
+        <div class="summary-item"><div class="label">HODL 市值</div><div class="value">$${fmtMoney(currentRow.hodlValue)}</div></div>
+        <div class="summary-item"><div class="label">LP 市值</div><div class="value">$${fmtMoney(currentRow.lpValue)}</div></div>
+        <div class="summary-item"><div class="label">无常缺口</div><div class="value ${currentRow.impLoss >= 0 ? 'neg' : 'pos'}">$${fmtMoney(currentRow.impLoss)}</div></div>
+        <div class="summary-item"><div class="label">LP 绝对浮亏</div><div class="value ${currentRow.absLoss >= 0 ? 'neg' : 'pos'}">$${fmtMoney(currentRow.absLoss)}</div></div>
+        <div class="summary-item"><div class="label">回本手续费</div><div class="value">$${fmtMoney(currentRow.backFee)}</div></div>
+        <div class="summary-item"><div class="label">回本时间</div><div class="value">${fmtHours(currentRow.backHours)}</div></div>
+      `;
+
+      const prices = generatePrices(Pa, Pb, currentP, priceB, spread);
+
+      let html = `
+        <thead><tr>
+          <th>PONS 价格 (USDG/PONS)</th>
+          <th>HODL 市值 ($)</th>
+          <th>LP 市值 ($)</th>
+          <th>无常缺口 ($)</th>
+          <th>LP 绝对浮亏 ($)</th>
+          <th>回本手续费 ($)</th>
+          <th>回本时间 (h)</th>
+        </tr></thead><tbody>
+      `;
+
+      prices.forEach(P => {
+        const row = calcRow(P);
+        const isCurrent = Math.abs(P - currentP) < Math.max(1e-12, currentP * 1e-12);
+        const highlight = isCurrent ? 'background: #eef2ff;' : '';
+        html += `<tr style="${highlight}">
+          <td>${fmtPrice(P)}${isCurrent ? ' ← 当前' : ''}</td>
+          <td>$${fmtMoney(row.hodlValue)}</td>
+          <td>$${fmtMoney(row.lpValue)}</td>
+          <td class="${row.impLoss >= 0 ? 'neg' : 'pos'}">$${fmtMoney(row.impLoss)}</td>
+          <td class="${row.absLoss >= 0 ? 'neg' : 'pos'}">$${fmtMoney(row.absLoss)}</td>
+          <td>$${fmtMoney(row.backFee)}</td>
+          <td>${fmtHours(row.backHours)}</td>
+        </tr>`;
+      });
+
+      html += '</tbody>';
+      $('resultTable').innerHTML = html;
+    } catch (e) {
+      $('errorMsg').textContent = '⚠️ ' + e.message;
+    }
+  }
+
+  // 实时更新：监听所有输入框的 input 事件
+  document.addEventListener('DOMContentLoaded', function() {
+    const inputs = document.querySelectorAll('input');
+    inputs.forEach(input => {
+      if (!input.readOnly) {
+        input.addEventListener('input', updateEvaluation);
+      }
+    });
+    updateEvaluation();
+
+    // ========== 关注功能 ==========
+    const followBtn = document.getElementById('followBtn');
+    const followStatus = document.getElementById('followStatus');
+    const STORAGE_KEY = 'v3_eval_followed';
+    const TWITTER_URL = 'https://x.com/web5_kol';
+
+    function updateFollowUI(followed) {
+      if (followed) {
+        followBtn.textContent = '已关注 ✓';
+        followBtn.classList.add('followed');
+        followStatus.textContent = '🎉 感谢关注！';
+        followBtn.disabled = true;
+      } else {
+        followBtn.textContent = '关注';
+        followBtn.classList.remove('followed');
+        followStatus.textContent = '🔔 关注我们';
+        followBtn.disabled = false;
+      }
+    }
+
+    const isFollowed = localStorage.getItem(STORAGE_KEY) === 'true';
+    updateFollowUI(isFollowed);
+
+    followBtn.addEventListener('click', function() {
+      if (this.disabled) return;
+      localStorage.setItem(STORAGE_KEY, 'true');
+      // 跳转到推特
+      window.location.href = TWITTER_URL;
+    });
+  });
+</script>
+</body>
+</html>
