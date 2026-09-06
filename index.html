@@ -372,6 +372,8 @@
       const currentP = num('currentPrice');
       const apr = num('apr') / 100;
       const spread = num('priceSpread');
+      const nameA = $('nameA').value.trim() || '代币A';
+      const nameB = $('nameB').value.trim() || '代币B';
 
       if (Pa <= 0 || Pb <= Pa) throw new Error('区间设置错误：需满足 0 < 下限 < 上限');
       if (qtyA < 0 || qtyB < 0 || priceA <= 0 || priceB <= 0 || currentP <= 0) {
@@ -423,7 +425,7 @@
 
       const summary = $('summary');
       summary.innerHTML = `
-        <div class="summary-item"><div class="label">当前 PONS 价格</div><div class="value">${fmtPrice(currentP)}</div></div>
+        <div class="summary-item"><div class="label">当前 ${nameB} 价格</div><div class="value">${fmtPrice(currentP)}</div></div>
         <div class="summary-item"><div class="label">HODL 市值</div><div class="value">$${fmtMoney(currentRow.hodlValue)}</div></div>
         <div class="summary-item"><div class="label">LP 市值</div><div class="value">$${fmtMoney(currentRow.lpValue)}</div></div>
         <div class="summary-item"><div class="label">无常缺口</div><div class="value ${currentRow.impLoss >= 0 ? 'neg' : 'pos'}">$${fmtMoney(currentRow.impLoss)}</div></div>
@@ -436,7 +438,7 @@
 
       let html = `
         <thead><tr>
-          <th>PONS 价格 (USDG/PONS)</th>
+          <th>${nameB} 价格 (${nameA}/${nameB})</th>
           <th>HODL 市值 ($)</th>
           <th>LP 市值 ($)</th>
           <th>无常缺口 ($)</th>
