@@ -286,7 +286,7 @@
     5. LP 市值 = 按 V3 宽区间和当前价格计算的实际持仓市值（基于上述流动性 L）。<br>
     6. 无常缺口 = HODL 市值 - LP 市值。<br>
     7. LP 绝对浮亏 = 初始投入市值 - 当前 LP 市值。<br>
-    8. 回本手续费 = max(0, LP 绝对浮亏)。<br>
+    8. 回本手续费 = max(0, 无常缺口)（即 LP 相对 HODL 的落后金额，价格涨、跌两个方向都计算）。<br>
     9. 回本时间 = 回本手续费 ÷ 1h收益；1h收益 = 当前LP市值 × APR / 8760。<br>
     10. 表格价格范围 = [下限 - 表格价格扩展, 上限 + 表格价格扩展]，均匀生成价格点。<br>
     11. 所有金额显示为完整美元数值（保留两位小数），不使用 K/M 缩写。<br>
@@ -414,7 +414,8 @@
         const lpValue = amounts.A * priceA + amounts.B * P;
         const impLoss = hodlValue - lpValue;
         const absLoss = initialValue - lpValue;
-        const backFee = Math.max(0, absLoss);
+        // 回本手续费按无常缺口（LP 相对 HODL 的落后金额）计算，价格涨跌两个方向都适用
+        const backFee = Math.max(0, impLoss);
         const hourlyIncome = lpValue * apr / 8760;
         const backHours = hourlyIncome > 0 ? backFee / hourlyIncome : Infinity;
         return { P, hodlValue, lpValue, impLoss, absLoss, backFee, backHours, hourlyIncome };
