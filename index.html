@@ -115,6 +115,27 @@
       margin-top: 10px;
     }
 
+    /* ---- 语言切换 & 头部操作 ---- */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .lang-btn {
+      background: #ffffff;
+      color: #374151;
+      border: 1px solid #d1d5db;
+      padding: 6px 16px;
+      border-radius: 30px;
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      margin: 0;
+      white-space: nowrap;
+    }
+    .lang-btn:hover { background: #f3f4f6; border-color: #9ca3af; }
+
     /* ---- 关注区域 ---- */
     .header-row {
       display: flex;
@@ -199,11 +220,14 @@
 <div class="container">
   <!-- 标题 + 关注 -->
   <div class="header-row">
-    <h1>🧊 新 V3 宽区间评估表</h1>
-    <div class="follow-area">
-      <span class="follow-status" id="followStatus">🔔 关注我们</span>
-      <button class="follow-btn" id="followBtn">关注</button>
-      <span class="follow-hint">点击后跳转关注</span>
+    <h1 data-i18n="app_title">🧊 新 V3 宽区间评估表</h1>
+    <div class="header-actions">
+      <button type="button" id="langToggle" class="lang-btn" title="Switch language">EN</button>
+      <div class="follow-area">
+        <span class="follow-status" id="followStatus">🔔 关注我们</span>
+        <button class="follow-btn" id="followBtn">关注</button>
+        <span class="follow-hint" data-i18n="follow_hint">点击后跳转关注</span>
+      </div>
     </div>
   </div>
 
@@ -211,65 +235,65 @@
   <div class="card">
     <div class="grid">
       <fieldset>
-        <legend>费用与区间</legend>
-        <label>费率 %
+        <legend data-i18n="fees_range">费用与区间</legend>
+        <label><span data-i18n="fee_rate">费率 %</span>
           <input id="feeRate" type="number" step="0.01" value="0.30" />
         </label>
-        <label>下限 (USDG/PONS)
+        <label><span data-i18n="lower_price">下限 (USDG/PONS)</span>
           <input id="lowerPrice" type="number" step="any" value="0.40" />
         </label>
-        <label>上限 (USDG/PONS)
+        <label><span data-i18n="upper_price">上限 (USDG/PONS)</span>
           <input id="upperPrice" type="number" step="any" value="0.80" />
         </label>
-        <label>表格价格扩展 (±)
+        <label><span data-i18n="price_spread">表格价格扩展 (±)</span>
           <input id="priceSpread" type="number" step="0.01" value="0.10" />
         </label>
       </fieldset>
 
       <fieldset>
-        <legend>代币信息</legend>
-        <label>代币A名称
+        <legend data-i18n="token_info">代币信息</legend>
+        <label><span data-i18n="label_nameA">代币A名称</span>
           <input id="nameA" type="text" value="USDG" />
         </label>
-        <label>代币A数量
+        <label><span data-i18n="label_qtyA">代币A数量</span>
           <input id="qtyA" type="number" step="any" value="1000" />
         </label>
-        <label>代币A价格
+        <label><span data-i18n="label_priceA">代币A价格</span>
           <input id="priceA" type="number" step="any" value="1.00" />
         </label>
         <hr style="border: none; border-top: 1px solid #e5e7eb; margin: 10px 0;" />
-        <label>代币B名称
+        <label><span data-i18n="label_nameB">代币B名称</span>
           <input id="nameB" type="text" value="PONS" />
         </label>
-        <label>代币B数量
+        <label><span data-i18n="label_qtyB">代币B数量</span>
           <input id="qtyB" type="number" step="any" value="2000" />
         </label>
-        <label>代币B价格（投入LP时）
+        <label><span data-i18n="label_priceB">代币B价格（投入LP时）</span>
           <input id="priceB" type="number" step="any" value="0.50" />
         </label>
-        <label>当前 PONS 价格
+        <label><span data-i18n="label_current_price">当前 PONS 价格</span>
           <input id="currentPrice" type="number" step="any" value="0.50" />
         </label>
       </fieldset>
 
       <fieldset>
-        <legend>收益设置</legend>
-        <label>APR %
+        <legend data-i18n="revenue_settings">收益设置</legend>
+        <label><span data-i18n="apr_label">APR %</span>
           <input id="apr" type="number" step="0.01" value="20.00" />
         </label>
-        <label>1h 收益 ($/h)（自动计算）
+        <label><span data-i18n="income1h_label">1h 收益 ($/h)（自动计算）</span>
           <input id="income1h" type="number" step="any" readonly value="0" />
         </label>
       </fieldset>
     </div>
 
-    <button type="button" onclick="updateEvaluation()">更新评估</button>
+    <button type="button" data-i18n="update_btn" onclick="updateEvaluation()">更新评估</button>
     <div id="errorMsg" class="error"></div>
   </div>
 
   <!-- 统计与表格 -->
   <div class="card">
-    <h2 style="margin-top:0;">当前统计摘要</h2>
+    <h2 style="margin-top:0;" data-i18n="summary_title">当前统计摘要</h2>
     <div id="summary" class="summary"></div>
     <div style="overflow-x:auto;">
       <table id="resultTable"></table>
@@ -277,47 +301,224 @@
   </div>
 
   <!-- 底部说明 -->
-  <div class="card notes">
-    <b>底部说明 / 计算假设</b><br>
-    1. 代币A 为报价币，代币B 为基准币，价格口径为 USDG/PONS。<br>
-    2. 代币B价格（投入LP时）用于计算初始投入市值；当前 PONS 价格用于计算当前持仓和收益。<br>
-    3. 流动性 L 由初始总价值（A数量 × A价格 + B数量 × 投入价）联合求解，确保在投入价格处 LP 市值 = HODL 市值 = 初始总价值。<br>
-    4. HODL 市值 = 初始A数量 × A价格 + 初始B数量 × 当前 PONS 价格。<br>
-    5. LP 市值 = 按 V3 宽区间和当前价格计算的实际持仓市值（基于上述流动性 L）。<br>
-    6. 无常缺口 = HODL 市值 - LP 市值。<br>
-    7. LP 绝对浮亏 = 初始投入市值 - 当前 LP 市值。<br>
-    8. 回本手续费 = |LP 绝对浮亏| = |初始投入市值 − 当前 LP 市值|（价格涨、跌两个方向都计算）。<br>
-    9. 回本时间 = 回本手续费 ÷ 1h收益；1h收益 = 当前LP市值 × APR / 8760。<br>
-    10. 表格价格范围 = [下限 - 表格价格扩展, 上限 + 表格价格扩展]，均匀生成价格点。<br>
-    11. 所有金额显示为完整美元数值（保留两位小数），不使用 K/M 缩写。<br>
-    12. 输入任何参数后，表格和摘要将实时自动刷新，无需点击按钮。
-  </div>
+  <div class="card notes" id="notesBox"></div>
 
   <!-- 联系方式区 -->
   <div class="card" style="padding: 12px 20px;">
     <div class="contact-area">
       <div class="contact-item">
         <span class="icon">📢</span>
-        <a href="https://t.me/web6kol" target="_blank">Telegram 频道</a>
+        <a href="https://t.me/web6kol" target="_blank" rel="noopener" data-i18n="telegram">Telegram 频道</a>
       </div>
       <div class="contact-item">
         <span class="icon">🐦</span>
-        <a href="https://x.com/web5_kol" target="_blank">Twitter / X</a>
+        <a href="https://x.com/web5_kol" target="_blank" rel="noopener" data-i18n="twitter">Twitter / X</a>
       </div>
       <div class="contact-item">
         <span class="icon">🪙</span>
-        <span>币安搜：<strong>web5kol</strong></span>
+        <span><span data-i18n="binance_search">币安搜：</span><strong>web5kol</strong></span>
       </div>
     </div>
   </div>
 </div>
 
 <script>
+  // ========== 中英文切换（i18n） ==========
+  const I18N = {
+    zh: {
+      page_title: 'V3 宽区间评估表（实时更新版）',
+      app_title: '🧊 新 V3 宽区间评估表',
+      follow_us: '🔔 关注我们',
+      follow_btn: '关注',
+      follow_btn_done: '已关注 ✓',
+      follow_thanks: '🎉 感谢关注！',
+      follow_hint: '点击后跳转关注',
+      fees_range: '费用与区间',
+      token_info: '代币信息',
+      revenue_settings: '收益设置',
+      fee_rate: '费率 %',
+      lower_price: '下限 (USDG/PONS)',
+      upper_price: '上限 (USDG/PONS)',
+      price_spread: '表格价格扩展 (±)',
+      label_nameA: '代币A名称',
+      label_qtyA: '代币A数量',
+      label_priceA: '代币A价格',
+      label_nameB: '代币B名称',
+      label_qtyB: '代币B数量',
+      label_priceB: '代币B价格（投入LP时）',
+      label_current_price: '当前 PONS 价格',
+      apr_label: 'APR %',
+      income1h_label: '1h 收益 ($/h)（自动计算）',
+      update_btn: '更新评估',
+      summary_title: '当前统计摘要',
+      summary_current_price: '当前 {nameB} 价格',
+      summary_hodl: 'HODL 市值',
+      summary_lp: 'LP 市值',
+      summary_il: '无常缺口',
+      summary_abs: 'LP 绝对浮亏',
+      summary_backfee: '回本手续费',
+      summary_backtime: '回本时间',
+      table_price_col: '{nameB} 价格 ({nameA}/{nameB})',
+      table_hodl: 'HODL 市值 ($)',
+      table_lp: 'LP 市值 ($)',
+      table_il: '无常缺口 ($)',
+      table_abs: 'LP 绝对浮亏 ($)',
+      table_backfee: '回本手续费 ($)',
+      table_backtime: '回本时间 (h)',
+      current_marker: '← 当前',
+      notes_title: '底部说明 / 计算假设',
+      telegram: 'Telegram 频道',
+      twitter: 'Twitter / X',
+      binance_search: '币安搜：',
+      fallback_nameA: '代币A',
+      fallback_nameB: '代币B',
+      err_invalid_number: '请输入有效数字：',
+      err_range: '区间设置错误：需满足 0 < 下限 < 上限',
+      err_amounts: '代币数量和价格必须大于等于 0，价格必须大于 0',
+      err_both_zero: '代币A和代币B数量不能同时为 0',
+      err_entry_range: '投入时价格必须位于 [下限, 上限] 区间内',
+      err_spread_neg: '表格价格扩展不能为负数',
+      err_liquidity: '无法计算流动性，请检查价格区间和价格设置',
+      unit_year: ' 年',
+      unit_month: ' 月',
+      unit_week: ' 周',
+      unit_day: ' 天',
+      unit_hour: ' h',
+      notes: [
+        '代币A 为报价币，代币B 为基准币，价格口径为 USDG/PONS。',
+        '代币B价格（投入LP时）用于计算初始投入市值；当前 PONS 价格用于计算当前持仓和收益。',
+        '流动性 L 由初始总价值（A数量 × A价格 + B数量 × 投入价）联合求解，确保在投入价格处 LP 市值 = HODL 市值 = 初始总价值。',
+        'HODL 市值 = 初始A数量 × A价格 + 初始B数量 × 当前 PONS 价格。',
+        'LP 市值 = 按 V3 宽区间和当前价格计算的实际持仓市值（基于上述流动性 L）。',
+        '无常缺口 = HODL 市值 - LP 市值。',
+        'LP 绝对浮亏 = 初始投入市值 - 当前 LP 市值。',
+        '回本手续费 = |LP 绝对浮亏| = |初始投入市值 − 当前 LP 市值|（价格涨、跌两个方向都计算）。',
+        '回本时间 = 回本手续费 ÷ 1h收益；1h收益 = 当前LP市值 × APR / 8760。',
+        '表格价格范围 = [下限 - 表格价格扩展, 上限 + 表格价格扩展]，均匀生成价格点。',
+        '所有金额显示为完整美元数值（保留两位小数），不使用 K/M 缩写。',
+        '输入任何参数后，表格和摘要将实时自动刷新，无需点击按钮。'
+      ]
+    },
+    en: {
+      page_title: 'V3 Wide-Range Evaluation Table (Live)',
+      app_title: '🧊 New V3 Wide-Range Evaluation Table',
+      follow_us: '🔔 Follow Us',
+      follow_btn: 'Follow',
+      follow_btn_done: 'Followed ✓',
+      follow_thanks: '🎉 Thanks for following!',
+      follow_hint: 'Click to follow',
+      fees_range: 'Fees & Range',
+      token_info: 'Token Info',
+      revenue_settings: 'Revenue Settings',
+      fee_rate: 'Fee Rate %',
+      lower_price: 'Lower Bound (USDG/PONS)',
+      upper_price: 'Upper Bound (USDG/PONS)',
+      price_spread: 'Table Price Extension (±)',
+      label_nameA: 'Token A Name',
+      label_qtyA: 'Token A Amount',
+      label_priceA: 'Token A Price',
+      label_nameB: 'Token B Name',
+      label_qtyB: 'Token B Amount',
+      label_priceB: 'Token B Price (at LP entry)',
+      label_current_price: 'Current PONS Price',
+      apr_label: 'APR %',
+      income1h_label: '1h Income ($/h) (auto)',
+      update_btn: 'Update Evaluation',
+      summary_title: 'Current Stats Summary',
+      summary_current_price: 'Current {nameB} Price',
+      summary_hodl: 'HODL Value',
+      summary_lp: 'LP Value',
+      summary_il: 'Impermanent Loss Gap',
+      summary_abs: 'LP Absolute Loss',
+      summary_backfee: 'Breakeven Fee',
+      summary_backtime: 'Breakeven Time',
+      table_price_col: '{nameB} Price ({nameA}/{nameB})',
+      table_hodl: 'HODL Value ($)',
+      table_lp: 'LP Value ($)',
+      table_il: 'Imp. Loss Gap ($)',
+      table_abs: 'LP Abs. Loss ($)',
+      table_backfee: 'Breakeven Fee ($)',
+      table_backtime: 'Breakeven Time (h)',
+      current_marker: '← now',
+      notes_title: 'Notes / Calculation Assumptions',
+      telegram: 'Telegram Channel',
+      twitter: 'Twitter / X',
+      binance_search: 'Binance search: ',
+      fallback_nameA: 'Token A',
+      fallback_nameB: 'Token B',
+      err_invalid_number: 'Please enter a valid number: ',
+      err_range: 'Range error: need 0 < lower < upper',
+      err_amounts: 'Amounts must be >= 0, and prices must be > 0',
+      err_both_zero: 'Token A and Token B amounts cannot both be 0',
+      err_entry_range: 'Entry price must be within [lower, upper]',
+      err_spread_neg: 'Table price extension cannot be negative',
+      err_liquidity: 'Cannot compute liquidity; check range and price settings',
+      unit_year: ' yr',
+      unit_month: ' mo',
+      unit_week: ' wk',
+      unit_day: ' d',
+      unit_hour: ' h',
+      notes: [
+        'Token A is the quote token, Token B is the base token; price is quoted in USDG/PONS.',
+        'Token B price (at LP entry) is used to compute the initial investment value; the current PONS price is used for the current position and income.',
+        'Liquidity L is solved from the initial total value (A amount × A price + B amount × entry price) so that at the entry price, LP value = HODL value = initial total value.',
+        'HODL value = initial A amount × A price + initial B amount × current PONS price.',
+        'LP value = the actual position value computed from the V3 wide range and the current price (based on the liquidity L above).',
+        'Impermanent loss gap = HODL value − LP value.',
+        'LP absolute loss = initial investment value − current LP value.',
+        'Breakeven fee = |LP absolute loss| = |initial investment value − current LP value| (computed in both price directions).',
+        'Breakeven time = breakeven fee ÷ 1h income; 1h income = current LP value × APR / 8760.',
+        'Table price range = [lower − price extension, upper + price extension], with evenly spaced price points.',
+        'All amounts are shown as full dollar values (2 decimals), without K/M abbreviations.',
+        'After entering any parameter, the table and summary refresh automatically in real time.'
+      ]
+    }
+  };
+
+  let LANG = (function () {
+    try { return localStorage.getItem('v3_lang') === 'en' ? 'en' : 'zh'; }
+    catch (e) { return 'zh'; }
+  })();
+
+  function t(key) {
+    if (I18N[LANG] && I18N[LANG][key] != null) return I18N[LANG][key];
+    if (I18N.zh[key] != null) return I18N.zh[key];
+    return key;
+  }
+
+  function applyStaticI18n() {
+    document.querySelectorAll('[data-i18n]').forEach(function (el) {
+      el.textContent = t(el.getAttribute('data-i18n'));
+    });
+  }
+
+  function renderNotes() {
+    const box = $('notesBox');
+    if (!box) return;
+    const notes = I18N[LANG].notes;
+    box.innerHTML = '<b>' + t('notes_title') + '</b><br>' +
+      notes.map(function (s, i) { return (i + 1) + '. ' + s; }).join('<br>');
+  }
+
+  function updateLangBtn() {
+    const b = $('langToggle');
+    if (b) b.textContent = (LANG === 'zh') ? 'EN' : '中文';
+  }
+
+  function setLang(next) {
+    LANG = next;
+    try { localStorage.setItem('v3_lang', LANG); } catch (e) {}
+    document.title = t('page_title');
+    applyStaticI18n();
+    renderNotes();
+    updateLangBtn();
+  }
+
   // ========== 原始评估脚本 ==========
   function $(id) { return document.getElementById(id); }
   function num(id) {
     const v = parseFloat($(id).value);
-    if (Number.isNaN(v)) throw new Error('请输入有效数字：' + id);
+    if (Number.isNaN(v)) throw new Error(t('err_invalid_number') + id);
     return v;
   }
 
@@ -334,11 +535,11 @@
 
   function fmtHours(h) {
     if (!Number.isFinite(h)) return '∞';
-    if (h >= 8760) return (h / 8760).toFixed(2) + ' 年';
-    if (h >= 720) return (h / 720).toFixed(2) + ' 月';
-    if (h >= 168) return (h / 168).toFixed(2) + ' 周';
-    if (h >= 24) return (h / 24).toFixed(2) + ' 天';
-    return h.toFixed(1) + ' h';
+    if (h >= 8760) return (h / 8760).toFixed(2) + t('unit_year');
+    if (h >= 720) return (h / 720).toFixed(2) + t('unit_month');
+    if (h >= 168) return (h / 168).toFixed(2) + t('unit_week');
+    if (h >= 24) return (h / 24).toFixed(2) + t('unit_day');
+    return h.toFixed(1) + t('unit_hour');
   }
 
   function generatePrices(Pa, Pb, currentP, priceB, spread) {
@@ -372,16 +573,16 @@
       const currentP = num('currentPrice');
       const apr = num('apr') / 100;
       const spread = num('priceSpread');
-      const nameA = $('nameA').value.trim() || '代币A';
-      const nameB = $('nameB').value.trim() || '代币B';
+      const nameA = $('nameA').value.trim() || t('fallback_nameA');
+      const nameB = $('nameB').value.trim() || t('fallback_nameB');
 
-      if (Pa <= 0 || Pb <= Pa) throw new Error('区间设置错误：需满足 0 < 下限 < 上限');
+      if (Pa <= 0 || Pb <= Pa) throw new Error(t('err_range'));
       if (qtyA < 0 || qtyB < 0 || priceA <= 0 || priceB <= 0 || currentP <= 0) {
-        throw new Error('代币数量和价格必须大于等于 0，价格必须大于 0');
+        throw new Error(t('err_amounts'));
       }
-      if (qtyA === 0 && qtyB === 0) throw new Error('代币A和代币B数量不能同时为 0');
-      if (priceB < Pa || priceB > Pb) throw new Error('投入时价格必须位于 [下限, 上限] 区间内');
-      if (spread < 0) throw new Error('表格价格扩展不能为负数');
+      if (qtyA === 0 && qtyB === 0) throw new Error(t('err_both_zero'));
+      if (priceB < Pa || priceB > Pb) throw new Error(t('err_entry_range'));
+      if (spread < 0) throw new Error(t('err_spread_neg'));
 
       const sqrtPa = Math.sqrt(Pa);
       const sqrtPb = Math.sqrt(Pb);
@@ -389,7 +590,7 @@
 
       const numerator = qtyA * priceA + qtyB * priceB;
       const denominator = (sqrtP0 - sqrtPa) * priceA + (1 / sqrtP0 - 1 / sqrtPb) * priceB;
-      if (denominator <= 0) throw new Error('无法计算流动性，请检查价格区间和价格设置');
+      if (denominator <= 0) throw new Error(t('err_liquidity'));
       const L = numerator / denominator;
 
       function currentAmounts(P) {
@@ -425,27 +626,29 @@
       $('income1h').value = currentRow.hourlyIncome.toFixed(6);
 
       const summary = $('summary');
+      const curPriceLabel = t('summary_current_price').replace('{nameB}', nameB);
       summary.innerHTML = `
-        <div class="summary-item"><div class="label">当前 ${nameB} 价格</div><div class="value">${fmtPrice(currentP)}</div></div>
-        <div class="summary-item"><div class="label">HODL 市值</div><div class="value">$${fmtMoney(currentRow.hodlValue)}</div></div>
-        <div class="summary-item"><div class="label">LP 市值</div><div class="value">$${fmtMoney(currentRow.lpValue)}</div></div>
-        <div class="summary-item"><div class="label">无常缺口</div><div class="value ${currentRow.impLoss >= 0 ? 'neg' : 'pos'}">$${fmtMoney(currentRow.impLoss)}</div></div>
-        <div class="summary-item"><div class="label">LP 绝对浮亏</div><div class="value ${currentRow.absLoss >= 0 ? 'neg' : 'pos'}">$${fmtMoney(currentRow.absLoss)}</div></div>
-        <div class="summary-item"><div class="label">回本手续费</div><div class="value">$${fmtMoney(currentRow.backFee)}</div></div>
-        <div class="summary-item"><div class="label">回本时间</div><div class="value">${fmtHours(currentRow.backHours)}</div></div>
+        <div class="summary-item"><div class="label">${curPriceLabel}</div><div class="value">${fmtPrice(currentP)}</div></div>
+        <div class="summary-item"><div class="label">${t('summary_hodl')}</div><div class="value">$${fmtMoney(currentRow.hodlValue)}</div></div>
+        <div class="summary-item"><div class="label">${t('summary_lp')}</div><div class="value">$${fmtMoney(currentRow.lpValue)}</div></div>
+        <div class="summary-item"><div class="label">${t('summary_il')}</div><div class="value ${currentRow.impLoss >= 0 ? 'neg' : 'pos'}">$${fmtMoney(currentRow.impLoss)}</div></div>
+        <div class="summary-item"><div class="label">${t('summary_abs')}</div><div class="value ${currentRow.absLoss >= 0 ? 'neg' : 'pos'}">$${fmtMoney(currentRow.absLoss)}</div></div>
+        <div class="summary-item"><div class="label">${t('summary_backfee')}</div><div class="value">$${fmtMoney(currentRow.backFee)}</div></div>
+        <div class="summary-item"><div class="label">${t('summary_backtime')}</div><div class="value">${fmtHours(currentRow.backHours)}</div></div>
       `;
 
       const prices = generatePrices(Pa, Pb, currentP, priceB, spread);
 
+      const priceCol = t('table_price_col').replace('{nameB}', nameB).replace('{nameA}', nameA);
       let html = `
         <thead><tr>
-          <th>${nameB} 价格 (${nameA}/${nameB})</th>
-          <th>HODL 市值 ($)</th>
-          <th>LP 市值 ($)</th>
-          <th>无常缺口 ($)</th>
-          <th>LP 绝对浮亏 ($)</th>
-          <th>回本手续费 ($)</th>
-          <th>回本时间 (h)</th>
+          <th>${priceCol}</th>
+          <th>${t('table_hodl')}</th>
+          <th>${t('table_lp')}</th>
+          <th>${t('table_il')}</th>
+          <th>${t('table_abs')}</th>
+          <th>${t('table_backfee')}</th>
+          <th>${t('table_backtime')}</th>
         </tr></thead><tbody>
       `;
 
@@ -454,7 +657,7 @@
         const isCurrent = Math.abs(P - currentP) < Math.max(1e-12, currentP * 1e-12);
         const highlight = isCurrent ? 'background: #eef2ff;' : '';
         html += `<tr style="${highlight}">
-          <td>${fmtPrice(P)}${isCurrent ? ' ← 当前' : ''}</td>
+          <td>${fmtPrice(P)}${isCurrent ? ' ' + t('current_marker') : ''}</td>
           <td>$${fmtMoney(row.hodlValue)}</td>
           <td>$${fmtMoney(row.lpValue)}</td>
           <td class="${row.impLoss >= 0 ? 'neg' : 'pos'}">$${fmtMoney(row.impLoss)}</td>
@@ -473,6 +676,12 @@
 
   // 实时更新：监听所有输入框的 input 事件
   document.addEventListener('DOMContentLoaded', function() {
+    // 初始化语言
+    document.title = t('page_title');
+    applyStaticI18n();
+    renderNotes();
+    updateLangBtn();
+
     const inputs = document.querySelectorAll('input');
     inputs.forEach(input => {
       if (!input.readOnly) {
@@ -486,30 +695,38 @@
     const followStatus = document.getElementById('followStatus');
     const STORAGE_KEY = 'v3_eval_followed';
     const TWITTER_URL = 'https://x.com/web5_kol';
+    let followed = localStorage.getItem(STORAGE_KEY) === 'true';
 
-    function updateFollowUI(followed) {
-      if (followed) {
-        followBtn.textContent = '已关注 ✓';
+    function updateFollowUI(isFollowed) {
+      if (isFollowed) {
+        followBtn.textContent = t('follow_btn_done');
         followBtn.classList.add('followed');
-        followStatus.textContent = '🎉 感谢关注！';
+        followStatus.textContent = t('follow_thanks');
         followBtn.disabled = true;
       } else {
-        followBtn.textContent = '关注';
+        followBtn.textContent = t('follow_btn');
         followBtn.classList.remove('followed');
-        followStatus.textContent = '🔔 关注我们';
+        followStatus.textContent = t('follow_us');
         followBtn.disabled = false;
       }
     }
 
-    const isFollowed = localStorage.getItem(STORAGE_KEY) === 'true';
-    updateFollowUI(isFollowed);
+    updateFollowUI(followed);
 
     followBtn.addEventListener('click', function() {
       if (this.disabled) return;
       localStorage.setItem(STORAGE_KEY, 'true');
+      followed = true;
       updateFollowUI(true);
       // 在新标签页打开推特，保留当前页面
       window.open(TWITTER_URL, '_blank', 'noopener,noreferrer');
+    });
+
+    // ========== 语言切换 ==========
+    document.getElementById('langToggle').addEventListener('click', function() {
+      setLang(LANG === 'zh' ? 'en' : 'zh');
+      updateFollowUI(followed);
+      updateEvaluation();
     });
   });
 </script>
